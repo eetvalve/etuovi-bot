@@ -30,7 +30,7 @@ exports.getApartments = async() => {
   return { amountOfPotentialApartments, potentialApartmentsListByDistricts };
 };
 
-const getApartmentListing = () => {
+const getApartmentListing = async () => {
   const config = {
     headers: requestData.headers()
   };
@@ -94,6 +94,8 @@ const addToPotentialApartmentsList = (apartmentSpecificData, list) => {
      link: linkToApartment,
      price: apartmentSpecificData.debfFreePrice,
      livingArea: apartmentSpecificData.residenceDetailsDTO?.livingArea,
+     residentialPropertyType: apartmentSpecificData.property?.residentialPropertyType,
+     carParkingInformation: apartmentSpecificData.property?.carParkingInformation,
    };
 
    // district item already exists => add new link inside it

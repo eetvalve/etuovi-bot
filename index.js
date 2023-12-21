@@ -13,6 +13,11 @@ app.listen(3333, () => {
     getValidApartments();
 });
 
+const KERROSTALO = 'APARTMENT_HOUSE';
+const RIVITALO = 'ROW_HOUSE';
+const PARITALO = 'SEMI_DETACHED_HOUSE';
+const OMAKOTI = 'DETACHED_HOUSE';
+
 const getValidApartments = async() => {
     const d = moment().format();
     const validApartments = await etuoviService.getApartments();
@@ -21,10 +26,37 @@ const getValidApartments = async() => {
 
     validApartments.potentialApartmentsListByDistricts.forEach(apartmentsByDistrict => {
         console.log(`${apartmentsByDistrict.district}:`);
-        apartmentsByDistrict.apartments.forEach(apartment => {
-            console.log(`${apartment.link} koko: ${apartment.livingArea} m², hinta: ${apartment.price} €`)
-        });
-        console.log('------------------------------------------------------------------');
+        getApartmentsByPropertyType(KERROSTALO, apartmentsByDistrict.apartments);
+        getApartmentsByPropertyType(RIVITALO, apartmentsByDistrict.apartments);
+        getApartmentsByPropertyType(PARITALO, apartmentsByDistrict.apartments);
+        getApartmentsByPropertyType(OMAKOTI, apartmentsByDistrict.apartments);
+
+        console.log('------------------------------------------------------------------------------------------------------------');
     });
     console.log('___________DONE____________');
+};
+
+const getApartmentsByPropertyType = (type, apartments) => {
+    const apartmentsList = apartments.filter(apartment => apartment.residentialPropertyType === type);
+    if (apartmentsList?.length) {
+        if (type === KERROSTALO) {
+            console.log('__Kerrostalot: ');
+        }
+        if (type === RIVITALO) {
+            console.log('__Rivitalot: ');
+        }
+        if (type === PARITALO) {
+            console.log('__Paritalot: ');
+        }
+        if (type === OMAKOTI) {
+            console.log('__Omakotitalot: ');
+        }
+        apartmentsList.forEach(apartment => {
+            console.log(`${apartment.link} koko: ${apartment.livingArea} m², hinta: ${apartment.price} €`);
+            if (apartment.carParkingInformation) {
+                console.log(`Autopaikan tiedot: ${apartment.carParkingInformation}`);
+            }
+        });
+        console.log('  ');
+    }
 };

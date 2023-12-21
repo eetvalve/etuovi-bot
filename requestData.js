@@ -1,8 +1,138 @@
+function setLocations () {
+  // Add locations here. Atm we are only searching from Helsinki districts.
+  // To change city modify: "FI_UUSIMAA_HELSINKI_" to something else
+  let locations = [
+    'lauttasaari',
+    'kapyla',
+    'pasila',
+    'toolo',
+    'arabia',
+    'tammisalo',
+    'laajasalo',
+    'herttoniemi',
+    'siilitie',
+    'viikki',
+    'verkkosaari',
+    'vallila',
+    'hermanni',
+    'rastila',
+    'haaga',
+    'etela-haaga',
+    'pohjois-haaga',
+    'meri-rastila',
+    'kulosaari',
+    'alppila',
+    'arabianranta',
+    'herttoniemenranta',
+    'ramsinranta',
+    'kallahti',
+    'meilahti',
+    'ruskeasuo',
+    'munkkiniemi',
+    'munkkivuori',
+    'kivihaka',
+    'huopalahti',
+    'tali',
+    'lassila',
+    'marttila',
+    'maunula',
+  ];
+  // here is manually added locations from node command args
+  const locationArgs = process.argv.slice(2);
+  locations = [ ...locations, ...locationArgs ];
+  console.log('Search locations: ', locations);
+
+  const city = 'FI_UUSIMAA_HELSINKI_';
+
+  return locations.map(location => ({
+    "type": "DISTRICT",
+    "index": 0,
+    "classified": true,
+    "code": `${city.toUpperCase()}${location.toUpperCase()}`,
+  }))
+}
+
 exports.payload = () => {
   return {
     "locationSearchCriteria": {
       "unclassifiedLocationTerms": [],
-      "classifiedLocationTerms": [
+      "classifiedLocationTerms": setLocations()
+    },
+    "pagination": {
+      "firstResult": 0,
+      "maxResults": 100,
+      "page": 1,
+      "sortingOrder": {
+        "property": "PUBLISHED_OR_UPDATED_AT",
+        "direction": "DESC"
+      }
+    },
+    "priceMin": null,
+    "priceMax": 500000,
+    "sizeMin": 58,
+    "sizeMax": null,
+    "sellerType": "ALL",
+    "officesId": [],
+    "bidType": "ALL",
+    "publishingTimeSearchCriteria": null,
+    "showingSearchCriteria": {},
+    "propertyType": "RESIDENTIAL",
+    "residentialPropertyTypes": [
+      "APARTMENT_HOUSE",
+      "ROW_HOUSE",
+      "SEMI_DETACHED_HOUSE",
+      "DETACHED_HOUSE"
+    ],
+    "freeTextSearch": "",
+    "plotAreaMin": null,
+    "plotAreaMax": null,
+    "yearMin": null,
+    "yearMax": null,
+    "priceSquareMeterMin": null,
+    "priceSquareMeterMax": null,
+    "maintenanceChargeMin": null,
+    "maintenanceChargeMax": null,
+    "newBuildingSearchCriteria": "ALL_PROPERTIES",
+    "plotHoldingTypes": [
+      "OWN"
+    ],
+    "ownershipTypes": [
+      "OWN"
+    ],
+    "hasShore": null,
+    "checkIfHasImages": null,
+    "checkIfHasPanorama": null,
+    "checkIfHasVideo": null,
+    "checkIfHasRemoteShowings": null,
+    "roomCounts": [],
+    "overallConditions": [
+      "GOOD",
+      "SATISFACTORY"
+    ],
+    "heatingSystems": null,
+    "apartmentHasSauna": true,
+    "apartmentHasNoSauna": null,
+    "housingCompanyHasSauna": null,
+    "apartmentHasBalcony": null, // <- use this option with caution. It will filter lot of options away.
+    "housingCompanyHasElevator": null,
+    "residentialFloorCountType": null,
+    "floorPositionInHighrise": null,
+    "carParkingFeatures": null,
+  }
+}
+
+exports.headers = () => {
+  return {
+    'X-XSRF-TOKEN': '1d40193d-4491-4edb-b793-ae650f4d86b8',
+    'Content-Type': 'application/json',
+    'XSRF-TOKEN': '1d40193d-4491-4edb-b793-ae650f4d86b8',
+    'Cookie': 'XSRF-TOKEN=1d40193d-4491-4edb-b793-ae650f4d86b8;',
+  }
+}
+
+// here is unused searchData by district. Found that whole object is not required to fetch districts apartment data.
+// List should be part of the: "classifiedLocationTerms":  -property
+/* [
         {
           "type": "DISTRICT",
           "index": 0,
@@ -252,57 +382,4 @@ exports.payload = () => {
           "parentMunicipalityName": "Helsinki",
           "fullName": "Arabia, Helsinki"
         }
-      ]
-    },
-    "pagination": {
-      "firstResult": 0,
-      "maxResults": 100,
-      "page": 1,
-      "sortingOrder": {
-        "property": "PUBLISHED_OR_UPDATED_AT",
-        "direction": "DESC"
-      }
-    },
-    "priceMin": null,
-    "priceMax": 450000,
-    "sizeMin": 50,
-    "sizeMax": null,
-    "sellerType": "ALL",
-    "officesId": [],
-    "bidType": "ALL",
-    "publishingTimeSearchCriteria": "WITHIN_TWO_WEEKS",
-    "showingSearchCriteria": {},
-    "propertyType": "RESIDENTIAL",
-    "residentialPropertyTypes": [
-      "APARTMENT_HOUSE",
-      "ROW_HOUSE",
-      "SEMI_DETACHED_HOUSE",
-      "DETACHED_HOUSE"
-    ],
-    "freeTextSearch": "",
-    "plotAreaMin": null,
-    "plotAreaMax": null,
-    "yearMin": null,
-    "yearMax": null,
-    "priceSquareMeterMin": null,
-    "priceSquareMeterMax": null,
-    "maintenanceChargeMin": null,
-    "maintenanceChargeMax": null,
-    "newBuildingSearchCriteria": "ALL_PROPERTIES",
-    "plotHoldingTypes": [
-      "OWN"
-    ],
-    "ownershipTypes": [
-      "OWN"
-    ]
-  }
-}
-
-exports.headers = () => {
-  return {
-    'X-XSRF-TOKEN': '1d40193d-4491-4edb-b793-ae650f4d86b8',
-    'Content-Type': 'application/json',
-    'XSRF-TOKEN': '1d40193d-4491-4edb-b793-ae650f4d86b8',
-    'Cookie': 'XSRF-TOKEN=1d40193d-4491-4edb-b793-ae650f4d86b8;',
-  }
-}
+      ]*/
